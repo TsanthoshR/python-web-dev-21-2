@@ -1,43 +1,67 @@
-from django.db import models
+# from django.db import models
+# from datetime import date
+from django.db.models import (
+    CharField,
+    DateField,
+    ManyToManyField,
+    Model,
+    SlugField,
+    TextField,
+    URLField,
+    EmailField,
+    ForeignKey,
+    CASCADE,
+)
 
 
-class Tag(models.Model):
-    name = models.CharField(max_length=31, unique=True)
-    slug = models.SlugField(
+class Tag(Model):
+    name = CharField(max_length=31, unique=True)
+    slug = SlugField(
         max_length=31,
         unique=True,
         help_text="A label for URL config.",
     )
 
+    class Meta:
+        ordering = ["name"]
+
     def __str__(self) -> str:
         return self.name
 
 
-class Startup(models.Model):
-    name = models.CharField(max_length=31, db_index=True)
-    slug = models.SlugField(
+class Startup(Model):
+    name = CharField(max_length=31, db_index=True)
+    slug = SlugField(
         max_length=31,
         unique=True,
         help_text="A label for URL config.",
     )
-    description = models.TextField()
-    founded_date = models.DateField("date founded")
-    contact = models.EmailField()
-    website = models.URLField(max_length=255)
-    tags = models.ManyToManyField(Tag)
+    description = TextField()
+    founded_date = DateField("date founded")
+    contact = EmailField()
+    website = URLField(max_length=255)
+    tags = ManyToManyField(Tag)
+
+    class Meta:
+        get_latest_by = "founded_date"
+        ordering = ["name"]
 
     def __str__(self) -> str:
         return self.name
 
 
-class NewsLink(models.Model):
-    title = models.CharField(max_length=31)
-    slug = models.SlugField(max_length=31)
-    pub_date = models.DateField("date published")
-    link = models.URLField(max_length=255)
-    startup = models.ForeignKey(
-        Startup, on_delete=models.CASCADE
-    )
+class NewsLink(Model):
+    title = CharField(max_length=31)
+    slug = SlugField(max_length=31)
+    pub_date = DateField("date published")
+    link = URLField(max_length=255)
+    startup = ForeignKey(Startup, on_delete=CASCADE)
+
+    class Meta:
+        get_latest_by = "pub_date"
+        ordering = ["-pub_date"]
+        unique_together = ("slug", "startup")
+        verbose_name = "news article"
 
     def __str__(self) -> str:
         return f"{self.startup}: {self.title}"
