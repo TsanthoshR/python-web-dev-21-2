@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     # third party
     "django_extensions",
     "rest_framework",
-    "url_checks.apps.UrlChecksConfig",
+    # "url_checks.apps.UrlChecksConfig",
     # first party
     "blog.apps.BlogConfig",
     "organizer.apps.OrganizerConfig",
